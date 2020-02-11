@@ -1,32 +1,24 @@
-const express = require('express')
+const path = require('path');
 
-const bodyParser = require('body-parser')
-
-const adminRoutes = require('./routes/admin')
-const shopRoutes = require('./routes/shop')
+const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-//first argument is an route
+app.set('view engine', 'pug');
+app.set('views', 'views');
 
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
-app.use('/admin', adminRoutes);
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 app.use((req, res, next) => {
-    res.status(404).send('<h1>Page not found</h1>')
-})
-
+    res.status(404).render('404', {pageTitle: 'Page Not Found'});
+});
 
 app.listen(3000);
-
-
-//npm start (script from node)
-//npm run something(customized scripts)
-//npm install (third party packages)
-//we can install packages for development or production .. like nodemon, its only for development
-//--save-dev
-//-g we'll not install it in this project put globally on your machine
